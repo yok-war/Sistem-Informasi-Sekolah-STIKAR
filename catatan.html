@@ -1,0 +1,33 @@
+<p>
+    dorpdown
+    *absensi kelas { absensi , jurnal };
+    *absensi guru  { absensi , jurnal };
+
+    A. absensi kelas
+        1. absensi
+            id(PK)
+            siswa_id(FK)
+            kelas_id(FK)
+            tgl 
+        2. jurnal
+            id(PK)
+            kelas_id (FK)
+            keterangan
+            tgl
+    b. absensi guru
+        1. absensi 
+            id(PK)
+            guru_id(PK)
+            siswa_id(PK)
+            kelas_id(pk)
+            tgl
+        2. jurnal
+            id
+            guru_id
+            kelas_id
+            keterangan
+            tgl
+</p>
+<p>
+    checkbox pilih banyak tidak keliatan, belum bisa edit, hapus banyak data
+</p>
