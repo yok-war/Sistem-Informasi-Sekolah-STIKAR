@@ -39,7 +39,7 @@ $currentPage = isset($_GET['page']) ? (int)$_GET['page'] : 1;
             <small><?= $totalRecords; ?> data jurnal</small>
         </div>
         <div class="d-flex gap-2 flex-wrap">
-            <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#modalJurnalKelas">
+            <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#modalJurnalKelas" onclick="resetJurnalKelasForm()">
                 <i class="bi bi-plus-lg"></i> Tambah Jurnal
             </button>
         </div>
@@ -115,7 +115,7 @@ $currentPage = isset($_GET['page']) ? (int)$_GET['page'] : 1;
                                     </div>
                                 </td>
                                 <td class="text-center">
-                                    <button type="button" class="btn btn-sm btn-warning" data-bs-toggle="modal" data-bs-target="#modalJurnalKelas">
+                                    <button type="button" class="btn btn-sm btn-warning" data-bs-toggle="modal" data-bs-target="#modalJurnalKelas" onclick="editJurnalKelas(<?= $row['id_jurnal_kelas']; ?>)">
                                         <i class="bi bi-pencil"></i>
                                     </button>
                                     <a href="proses/hps_jurnal_kelas.php?id=<?= $row['id_jurnal_kelas']; ?>" class="btn btn-sm btn-danger" onclick="return confirm('Yakin ingin menghapus?')">
@@ -154,18 +154,19 @@ $currentPage = isset($_GET['page']) ? (int)$_GET['page'] : 1;
     <div class="modal-dialog modal-lg">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title">Tambah Jurnal Kelas</h5>
+                <h5 class="modal-title" id="modalJurnalKelasTitle">Tambah Jurnal Kelas</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
             </div>
-            <form method="POST" action="proses/tbh_jurnal_kelas.php">
+            <form id="formJurnalKelas" method="POST" action="proses/tbh_jurnal_kelas.php">
+                <input type="hidden" name="id" id="jurnalKelasId">
                 <div class="modal-body">
                     <div class="mb-3">
                         <label class="form-label">Tanggal <span class="text-danger">*</span></label>
-                        <input type="date" name="tgl" class="form-control" required>
+                        <input type="date" id="tglJurnalKelas" name="tgl" class="form-control" required>
                     </div>
                     <div class="mb-3">
                         <label class="form-label">Kelas <span class="text-danger">*</span></label>
-                        <select name="kelas_id" class="form-select" required>
+                        <select id="kelasIdJurnalKelas" name="kelas_id" class="form-select" required>
                             <option value="">-- Pilih Kelas --</option>
                             <?php foreach ($kelasOptions as $kelas): ?>
                                 <option value="<?= $kelas['id_kelas']; ?>"><?= htmlspecialchars($kelas['nama_kelas']); ?></option>
@@ -174,7 +175,7 @@ $currentPage = isset($_GET['page']) ? (int)$_GET['page'] : 1;
                     </div>
                     <div class="mb-3">
                         <label class="form-label">Keterangan <span class="text-danger">*</span></label>
-                        <textarea name="keterangan" class="form-control" rows="5" placeholder="Masukkan keterangan kegiatan/pembelajaran kelas..." required></textarea>
+                        <textarea id="keteranganJurnalKelas" name="keterangan" class="form-control" rows="5" placeholder="Masukkan keterangan kegiatan/pembelajaran kelas..." required></textarea>
                     </div>
                 </div>
                 <div class="modal-footer">
@@ -185,5 +186,39 @@ $currentPage = isset($_GET['page']) ? (int)$_GET['page'] : 1;
         </div>
     </div>
 </div>
+</div>
+
+<script>
+function resetJurnalKelasForm() {
+    document.getElementById('formJurnalKelas').reset();
+    document.getElementById('modalJurnalKelasTitle').textContent = 'Tambah Jurnal Kelas';
+    document.getElementById('formJurnalKelas').action = 'proses/tbh_jurnal_kelas.php';
+    document.getElementById('jurnalKelasId').value = '';
+}
+
+function editJurnalKelas(id) {
+    // Reset form
+    document.getElementById('formJurnalKelas').reset();
+    document.getElementById('modalJurnalKelasTitle').textContent = 'Edit Jurnal Kelas';
+    document.getElementById('formJurnalKelas').action = 'proses/edit_jurnal_kelas.php';
+    document.getElementById('jurnalKelasId').value = id;
+    
+    // Fetch data
+    fetch('proses/get_jurnal_kelas.php?id=' + id)
+        .then(response => response.json())
+        .then(data => {
+            console.log('Jurnal kelas data:', data);
+            
+            // Set form values
+            document.getElementById('tglJurnalKelas').value = data.tgl;
+            document.getElementById('kelasIdJurnalKelas').value = data.kelas_id;
+            document.getElementById('keteranganJurnalKelas').value = data.keterangan;
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('Gagal memuat data jurnal');
+        });
+}
+</script>
 
 <?php include 'includes/footer.php'; ?>

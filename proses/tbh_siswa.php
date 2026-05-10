@@ -1,6 +1,6 @@
 <?php
 include '../config.php';
-$kelas = mysqli_query($conn, "SELECT * FROM kelas");
+$kelas = mysqli_query($conn, "SELECT * FROM kelas JOIN jurusan ON kelas.jurusan_id = jurusan.id_jurusan");
 if (isset($_POST['submit'])) {
     if (tbh_siswa($_POST) > 0) {
         echo "
@@ -75,7 +75,7 @@ if (isset($_POST['submit'])) {
                         <select name="kelas" id="kelas" class="form-select">
                             <?php while ($row = mysqli_fetch_assoc($kelas)) { ?>
                                 <option value="<?= $row['id_kelas'] ?>">
-                                    <?= $row['nama_kelas'] ?>
+                                    <?= $row['nama_kelas'] ?> - <?= $row['nama_jurusan'] ?>
                                 </option>
                             <?php } ?>
                         </select>

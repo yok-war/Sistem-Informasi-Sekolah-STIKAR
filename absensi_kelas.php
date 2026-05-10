@@ -15,7 +15,6 @@ $filters = [
     'date_start' => $_GET['date_start'] ?? '',
     'date_end' => $_GET['date_end'] ?? '',
     'kelas_id' => $_GET['kelas_id'] ?? '',
-    'jurusan_id' => $_GET['jurusan_id'] ?? '',
     'siswa_id' => $_GET['siswa_id'] ?? '',
     'status' => $_GET['status'] ?? '',
     'search' => $_GET['search'] ?? ''
@@ -34,7 +33,6 @@ $stats = getStatusStats('absensi_kelas', buildFilterQuery('absensi_kelas', $filt
 
 // Get options for dropdowns
 $kelasOptions = getKelasOptions();
-$jurusanOptions = getJurusanOptions();
 $siswaOptions = !empty($filters['kelas_id']) ? getSiswaByKelas($filters['kelas_id']) : [];
 
 $totalPages = ceil($totalRecords / $limit);
@@ -51,9 +49,12 @@ $currentPage = isset($_GET['page']) ? (int)$_GET['page'] : 1;
             <small><?= $stats['total'] ?? 0; ?> data absensi</small>
         </div>
         <div class="d-flex gap-2 flex-wrap">
-            <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#modalAbsensiKelas">
+            <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#modalAbsensiKelas" onclick="resetAbsensiKelasForm()">
                 <i class="bi bi-plus-lg"></i> Tambah Absensi
             </button>
+            <a href="absensi_kelas_cepat.php" class="btn btn-info">
+                <i class="bi bi-lightning-fill"></i> Absensi Cepat
+            </a>
         </div>
     </div>
 
@@ -97,29 +98,18 @@ $currentPage = isset($_GET['page']) ? (int)$_GET['page'] : 1;
                 <label class="form-label">Sampai Tanggal</label>
                 <input type="date" name="date_end" class="form-control" value="<?= htmlspecialchars($filters['date_end']); ?>">
             </div>
-            <div class="col-md-2">
+            <div class="col-md-3">
                 <label class="form-label">Kelas</label>
                 <select name="kelas_id" class="form-select">
                     <option value="">-- Semua Kelas --</option>
                     <?php foreach ($kelasOptions as $kelas): ?>
                         <option value="<?= $kelas['id_kelas']; ?>" <?= $filters['kelas_id'] == $kelas['id_kelas'] ? 'selected' : ''; ?>>
-                            <?= htmlspecialchars($kelas['nama_kelas']); ?>
+                            <?= htmlspecialchars($kelas['nama_kelas'] . ' - ' . ($kelas['nama_jurusan'] ?? '')); ?>
                         </option>
                     <?php endforeach; ?>
                 </select>
             </div>
-            <div class="col-md-2">
-                <label class="form-label">Jurusan</label>
-                <select name="jurusan_id" class="form-select">
-                    <option value="">-- Semua Jurusan --</option>
-                    <?php foreach ($jurusanOptions as $jurusan): ?>
-                        <option value="<?= $jurusan['id_jurusan']; ?>" <?= $filters['jurusan_id'] == $jurusan['id_jurusan'] ? 'selected' : ''; ?>>
-                            <?= htmlspecialchars($jurusan['nama_jurusan']); ?>
-                        </option>
-                    <?php endforeach; ?>
-                </select>
-            </div>
-            <div class="col-md-2">
+            <div class="col-md-3">
                 <label class="form-label">Status</label>
                 <select name="status" class="form-select">
                     <option value="">-- Semua Status --</option>
@@ -129,7 +119,7 @@ $currentPage = isset($_GET['page']) ? (int)$_GET['page'] : 1;
                     <option value="alpha" <?= $filters['status'] == 'alpha' ? 'selected' : ''; ?>>Alpha</option>
                 </select>
             </div>
-            <div class="col-md-2">
+            <div class="col-md-3">
                 <label class="form-label">Siswa (opsional)</label>
                 <select name="siswa_id" class="form-select">
                     <option value="">-- Semua Siswa --</option>
@@ -215,7 +205,7 @@ $currentPage = isset($_GET['page']) ? (int)$_GET['page'] : 1;
                 <ul class="pagination">
                     <?php for ($i = 1; $i <= $totalPages; $i++): ?>
                         <li class="page-item <?= $i == $currentPage ? 'active' : ''; ?>">
-                            <a class="page-link" href="?page=<?= $i; ?><?= !empty($filters['date_start']) ? '&date_start=' . urlencode($filters['date_start']) : ''; ?><?= !empty($filters['date_end']) ? '&date_end=' . urlencode($filters['date_end']) : ''; ?><?= !empty($filters['kelas_id']) ? '&kelas_id=' . urlencode($filters['kelas_id']) : ''; ?><?= !empty($filters['jurusan_id']) ? '&jurusan_id=' . urlencode($filters['jurusan_id']) : ''; ?><?= !empty($filters['status']) ? '&status=' . urlencode($filters['status']) : ''; ?><?= !empty($filters['search']) ? '&search=' . urlencode($filters['search']) : ''; ?>">
+                            <a class="page-link" href="?page=<?= $i; ?><?= !empty($filters['date_start']) ? '&date_start=' . urlencode($filters['date_start']) : ''; ?><?= !empty($filters['date_end']) ? '&date_end=' . urlencode($filters['date_end']) : ''; ?><?= !empty($filters['kelas_id']) ? '&kelas_id=' . urlencode($filters['kelas_id']) : ''; ?><?= !empty($filters['status']) ? '&status=' . urlencode($filters['status']) : ''; ?><?= !empty($filters['search']) ? '&search=' . urlencode($filters['search']) : ''; ?>">
                                 <?= $i; ?>
                             </a>
                         </li>
@@ -246,7 +236,7 @@ $currentPage = isset($_GET['page']) ? (int)$_GET['page'] : 1;
                         <select id="kelasId" name="kelas_id" class="form-select" required onchange="loadSiswa()">
                             <option value="">-- Pilih Kelas --</option>
                             <?php foreach ($kelasOptions as $kelas): ?>
-                                <option value="<?= $kelas['id_kelas']; ?>"><?= htmlspecialchars($kelas['nama_kelas']); ?></option>
+                                <option value="<?= $kelas['id_kelas']; ?>"><?= htmlspecialchars($kelas['nama_kelas'] . ' - ' . ($kelas['nama_jurusan'] ?? '')); ?></option>
                             <?php endforeach; ?>
                         </select>
                     </div>
@@ -288,25 +278,49 @@ $currentPage = isset($_GET['page']) ? (int)$_GET['page'] : 1;
 </div>
 
 <script>
+function resetAbsensiKelasForm() {
+    document.getElementById('formAbsensi').reset();
+    document.getElementById('modalTitle').textContent = 'Tambah Absensi Kelas';
+    document.getElementById('formAbsensi').action = 'proses/tbh_absensi_kelas.php';
+    document.getElementById('absensiId').value = '';
+}
+
 function loadSiswa() {
     const kelasId = document.getElementById('kelasId').value;
     const siswaSelect = document.getElementById('siswaId');
     
     if (!kelasId) {
         siswaSelect.innerHTML = '<option value="">-- Pilih Siswa --</option>';
+        console.log('Kelas tidak dipilih');
         return;
     }
     
+    console.log('Loading siswa untuk kelas:', kelasId);
+    
     fetch('proses/get_siswa_kelas.php?kelas_id=' + kelasId)
-        .then(response => response.json())
+        .then(response => {
+            console.log('Response status:', response.status);
+            return response.json();
+        })
         .then(data => {
+            console.log('Siswa data:', data);
             siswaSelect.innerHTML = '<option value="">-- Pilih Siswa --</option>';
+            if (data.length === 0) {
+                console.warn('Tidak ada siswa untuk kelas ini');
+                siswaSelect.innerHTML += '<option disabled>Tidak ada siswa</option>';
+                return;
+            }
             data.forEach(siswa => {
                 const option = document.createElement('option');
                 option.value = siswa.id_siswa;
                 option.textContent = siswa.nama_siswa + ' (' + siswa.nis_siswa + ')';
                 siswaSelect.appendChild(option);
+                console.log('Added siswa:', siswa.nama_siswa);
             });
+        })
+        .catch(error => {
+            console.error('Fetch error:', error);
+            alert('Error loading siswa: ' + error.message);
         });
 }
 
@@ -317,8 +331,42 @@ function editAbsensi(id) {
     document.getElementById('formAbsensi').action = 'proses/edit_absensi_kelas.php';
     document.getElementById('absensiId').value = id;
     
-    // Fetch data (optional - can implement later)
-    // For now, just open modal
+    // Fetch data
+    fetch('proses/get_absensi_kelas.php?id=' + id)
+        .then(response => response.json())
+        .then(data => {
+            console.log('Absensi data:', data);
+            
+            // Set form values
+            document.getElementById('tgl').value = data.tgl;
+            document.getElementById('kelasId').value = data.kelas_id;
+            
+            // Load siswa for this kelas
+            fetch('proses/get_siswa_kelas.php?kelas_id=' + data.kelas_id)
+                .then(response => response.json())
+                .then(siswaData => {
+                    const siswaSelect = document.getElementById('siswaId');
+                    siswaSelect.innerHTML = '<option value="">-- Pilih Siswa --</option>';
+                    
+                    siswaData.forEach(siswa => {
+                        const option = document.createElement('option');
+                        option.value = siswa.id_siswa;
+                        option.textContent = siswa.nama_siswa + ' (' + siswa.nis_siswa + ')';
+                        if (siswa.id_siswa == data.siswa_id) {
+                            option.selected = true;
+                        }
+                        siswaSelect.appendChild(option);
+                    });
+                })
+                .catch(error => console.error('Error loading siswa:', error));
+            
+            // Set status
+            document.querySelector('input[name="status"][value="' + data.status + '"]').checked = true;
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('Gagal memuat data absensi');
+        });
 }
 </script>
 

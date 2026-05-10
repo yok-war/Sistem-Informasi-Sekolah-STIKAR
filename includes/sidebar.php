@@ -3,7 +3,13 @@ include_once __DIR__ . '/../config.php';
 ?>
 <div class="overlay" id="overlay" onclick="closeSidebar()"></div>
 <div class="sidebar" id="sidebar">
-    <div class="logo">SIS<br><small>Sistem Informasi Sekolah</small></div>
+    <div class="sidebar-brand">
+        <img src="assets/img/logo.png" alt="SMK TI Bali Global Karangasem" class="brand-logo">
+        <div class="brand-text">
+            <strong>SMK TI Bali Global</strong>
+            <small>Karangasem</small>
+        </div>
+    </div>
     
     <!-- Dashboard Section -->
     <a href="<?= $base_url ?>dashboard.php" class="<?= $current_page == 'dashboard.php' ? 'active' : '' ?>"><i class="bi bi-grid"></i> Dashboard</a>

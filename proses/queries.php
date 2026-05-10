@@ -99,7 +99,7 @@ function updateAbsensiKelas($id, $tgl, $kelas_id, $siswa_id, $status) {
     }
     
     $stmt = mysqli_prepare($conn, "UPDATE absensi_kelas SET tgl = ?, kelas_id = ?, siswa_id = ?, status = ? WHERE id_absensi_kelas = ?");
-    mysqli_stmt_bind_param($stmt, 'siiis', $tgl, $kelas_id, $siswa_id, $status, $id);
+    mysqli_stmt_bind_param($stmt, 'siisi', $tgl, $kelas_id, $siswa_id, $status, $id);
     
     if (mysqli_stmt_execute($stmt)) {
         return ['success' => true, 'message' => 'Data absensi berhasil diperbarui'];
@@ -129,7 +129,7 @@ function deleteAbsensiKelas($id) {
  * Get kelas options for dropdown
  */
 function getKelasOptions() {
-    return query("SELECT id_kelas, nama_kelas FROM kelas ORDER BY nama_kelas ASC");
+    return query("SELECT kelas.id_kelas, kelas.nama_kelas, jurusan.nama_jurusan FROM kelas LEFT JOIN jurusan ON kelas.jurusan_id = jurusan.id_jurusan ORDER BY kelas.nama_kelas ASC");
 }
 /**
  * Get jurusan options for dropdown
@@ -213,7 +213,7 @@ function insertAbsensiGuru($tgl, $guru_id, $kelas_id, $siswa_id, $status) {
     $siswa_id = !empty($siswa_id) ? (int)$siswa_id : null;
     
     $stmt = mysqli_prepare($conn, "INSERT INTO absensi_guru (tgl, guru_id, kelas_id, siswa_id, status) VALUES (?, ?, ?, ?, ?)");
-    mysqli_stmt_bind_param($stmt, 'siisis', $tgl, $guru_id, $kelas_id, $siswa_id, $status);
+    mysqli_stmt_bind_param($stmt, 'siiis', $tgl, $guru_id, $kelas_id, $siswa_id, $status);
     
     if (mysqli_stmt_execute($stmt)) {
         return ['success' => true, 'message' => 'Data absensi berhasil ditambahkan'];
@@ -241,7 +241,7 @@ function updateAbsensiGuru($id, $tgl, $guru_id, $kelas_id, $siswa_id, $status) {
     $siswa_id = !empty($siswa_id) ? (int)$siswa_id : null;
     
     $stmt = mysqli_prepare($conn, "UPDATE absensi_guru SET tgl = ?, guru_id = ?, kelas_id = ?, siswa_id = ?, status = ? WHERE id_absensi_guru = ?");
-    mysqli_stmt_bind_param($stmt, 'siissi', $tgl, $guru_id, $kelas_id, $siswa_id, $status, $id);
+    mysqli_stmt_bind_param($stmt, 'siiisi', $tgl, $guru_id, $kelas_id, $siswa_id, $status, $id);
     
     if (mysqli_stmt_execute($stmt)) {
         return ['success' => true, 'message' => 'Data absensi berhasil diperbarui'];

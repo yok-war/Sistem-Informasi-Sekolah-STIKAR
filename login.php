@@ -2,15 +2,16 @@
 include 'config.php';
 
 if(isset($_POST['login'])){
-    $username = $_POST['username'];
-    $password = md5($_POST['password']);
+    $username = trim($_POST['username'] ?? '');
+    $password = md5($_POST['password'] ?? '');
 
-    $cek = mysqli_query($conn,"SELECT * FROM users WHERE username='$username' AND password='$password'");
+    $cek = mysqli_query($conn, "SELECT * FROM users WHERE username='$username' AND password='$password'");
     if(mysqli_num_rows($cek) > 0){
         $_SESSION['login'] = true;
-        header("Location: dashboard.php");
+        $_SESSION['username'] = $username;
+        $success = 'Login berhasil! Anda akan diarahkan ke Dashboard dalam beberapa detik.';
     } else {
-        $error = "Username atau Password salah!";
+        $error = 'Username atau Password salah. Silakan periksa kembali username dan password Anda.';
     }
 }
 ?>
@@ -18,24 +19,56 @@ if(isset($_POST['login'])){
 <!DOCTYPE html>
 <html>
 <head>
-<title>Login SIS</title>
-<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Login SIS</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="/sis/css/style.css">
 </head>
-<body class="bg-light d-flex justify-content-center align-items-center" style="height:100vh">
+<body class="bg-light d-flex justify-content-center align-items-center" style="min-height:100vh">
 
-<div class="card p-4 shadow" style="width:350px">
-<h4 class="text-center mb-3">Login SIS</h4>
+<div class="card rounded-4 shadow-lg p-4" style="width:100%; max-width:420px;">
+  <div class="text-center mb-4">
+    <img src="assets/img/logo.png" alt="Logo" style="width:64px; height:64px; object-fit:contain;">
+    <h4 class="mt-3 fw-bold">SIS Login</h4>
+    <p class="text-secondary">Masuk untuk mengelola data absensi, jurnal, dan statistik sekolah.</p>
+  </div>
 
-<?php if(isset($error)) echo "<div class='alert alert-danger'>$error</div>"; ?>
+  <?php if(!empty($error)): ?>
+    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+      <strong>Login gagal!</strong> <?= htmlspecialchars($error) ?>
+      <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+  <?php endif; ?>
 
-<form method="POST">
-<input type="text" name="username" class="form-control mb-3" placeholder="Username" required>
-<input type="password" name="password" class="form-control mb-3" placeholder="Password" required>
-<button name="login" class="btn btn-primary w-100">Login</button>
-</form>
+  <?php if(!empty($success)): ?>
+    <div class="alert alert-success alert-dismissible fade show" role="alert" id="loginSuccessAlert">
+      <strong>Berhasil!</strong> <?= htmlspecialchars($success) ?>
+    </div>
+  <?php endif; ?>
 
-<p class="text-center mt-3">Belum punya akun? <a href="register.php">Register</a></p>
+  <form method="POST" autocomplete="off">
+    <div class="mb-3">
+      <label class="form-label">Username</label>
+      <input type="text" name="username" class="form-control" placeholder="Username" required>
+    </div>
+    <div class="mb-3">
+      <label class="form-label">Password</label>
+      <input type="password" name="password" class="form-control" placeholder="Password" required>
+    </div>
+    <button name="login" class="btn btn-primary w-100">Masuk</button>
+  </form>
+
+  <p class="text-center text-muted mt-4 mb-0">Belum punya akun? <a href="register.php">Daftar sekarang</a></p>
 </div>
+
+<?php if(!empty($success)): ?>
+<script>
+  setTimeout(function() {
+    window.location.href = 'dashboard.php';
+  }, 2200);
+</script>
+<?php endif; ?>
 
 </body>
 </html>

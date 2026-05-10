@@ -2,9 +2,9 @@
 
     <!-- LEFT -->
     <div class="topbar-left">
-        <h4>Dashboard</h4>
+        <h4><?= htmlspecialchars($title ?? 'Dashboard') ?></h4>
         <small>
-            <?php echo date('l, d F Y'); ?>
+            <?= date('l, d F Y'); ?>
         </small>
     </div>
 
@@ -26,7 +26,7 @@
         <div class="dropdown">
             <div class="profile-box" data-bs-toggle="dropdown">
                 <i class="bi bi-person-circle fs-5"></i>
-                <p class="fw-1 m-0">Admin</p>
+                <p class="fw-1 m-0"><?= htmlspecialchars($_SESSION['username'] ?? 'Admin') ?></p>
             </div>
 
             <ul class="dropdown-menu dropdown-menu-end">
@@ -35,7 +35,7 @@
                 <li>
                     <hr class="dropdown-divider">
                 </li>
-                <li><a class="dropdown-item text-danger" href="p/logout.php">Logout</a></li>
+                <li><a class="dropdown-item text-danger" href="<?= isset($base_url) ? $base_url . 'logout.php' : '/sis/logout.php' ?>">Logout</a></li>
             </ul>
         </div>
 

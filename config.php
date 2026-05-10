@@ -87,12 +87,12 @@ function tbh_siswa($data)
 function tbh_kelas($data)
 {
     global $conn;
-    $nama = htmlspecialchars($data['nama']);
+    $kelas = htmlspecialchars($data['kelas']);
     $jurusan_id = htmlspecialchars($data['jurusan']);
 
     $stmn = mysqli_prepare($conn, "INSERT INTO kelas (nama_kelas, jurusan_id) VALUES (?,?)");
 
-    mysqli_stmt_bind_param($stmn, "sii", $nama, $jurusan_id,);
+    mysqli_stmt_bind_param($stmn, "si", $kelas, $jurusan_id);
     mysqli_stmt_execute($stmn);
 
     return mysqli_affected_rows($conn);

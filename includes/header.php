@@ -21,13 +21,19 @@
 </head>
 
 <body class="dark-mode">
+  <?php
+  $siteSettings = query("SELECT * FROM settings WHERE id=1")[0] ?? ['theme' => 'light'];
+  $serverTheme = $siteSettings['theme'] === 'dark' ? 'dark' : 'light';
+  ?>
   <script>
     (function () {
       try {
         const savedTheme = localStorage.getItem('theme');
-        if (savedTheme === 'light') {
+        const serverTheme = '<?= $serverTheme ?>';
+        const theme = savedTheme || serverTheme;
+        if (theme === 'light') {
           document.body.classList.remove('dark-mode');
-        } else if (savedTheme === 'dark') {
+        } else {
           document.body.classList.add('dark-mode');
         }
       } catch (e) {
@@ -35,6 +41,14 @@
       }
     })();
   </script>
+  <!-- Loading overlay -->
+  <div id="pageLoader" class="page-loader">
+    <div class="page-loader-content">
+      <div class="spinner-border text-primary" role="status"></div>
+      <span>Memuat...</span>
+    </div>
+  </div>
+
   <!-- ===== MOBILE NAVBAR ===== -->
   <?php include 'mobile-navbar.php'; ?>
 

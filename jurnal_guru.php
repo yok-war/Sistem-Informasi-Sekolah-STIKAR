@@ -41,7 +41,7 @@ $currentPage = isset($_GET['page']) ? (int)$_GET['page'] : 1;
             <small><?= $totalRecords; ?> data jurnal</small>
         </div>
         <div class="d-flex gap-2 flex-wrap">
-            <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#modalJurnalGuru">
+            <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#modalJurnalGuru" onclick="resetJurnalGuruForm()">
                 <i class="bi bi-plus-lg"></i> Tambah Jurnal
             </button>
         </div>
@@ -130,7 +130,7 @@ $currentPage = isset($_GET['page']) ? (int)$_GET['page'] : 1;
                                     </div>
                                 </td>
                                 <td class="text-center">
-                                    <button type="button" class="btn btn-sm btn-warning" data-bs-toggle="modal" data-bs-target="#modalJurnalGuru">
+                                    <button type="button" class="btn btn-sm btn-warning" data-bs-toggle="modal" data-bs-target="#modalJurnalGuru" onclick="editJurnalGuru(<?= $row['id_jurnal_guru']; ?>)">
                                         <i class="bi bi-pencil"></i>
                                     </button>
                                     <a href="proses/hps_jurnal_guru.php?id=<?= $row['id_jurnal_guru']; ?>" class="btn btn-sm btn-danger" onclick="return confirm('Yakin ingin menghapus?')">
@@ -169,18 +169,19 @@ $currentPage = isset($_GET['page']) ? (int)$_GET['page'] : 1;
     <div class="modal-dialog modal-lg">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title">Tambah Jurnal Guru</h5>
+                <h5 class="modal-title" id="modalJurnalGuruTitle">Tambah Jurnal Guru</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
             </div>
-            <form method="POST" action="proses/tbh_jurnal_guru.php">
+            <form id="formJurnalGuru" method="POST" action="proses/tbh_jurnal_guru.php">
+                <input type="hidden" name="id" id="jurnalGuruId">
                 <div class="modal-body">
                     <div class="mb-3">
                         <label class="form-label">Tanggal <span class="text-danger">*</span></label>
-                        <input type="date" name="tgl" class="form-control" required>
+                        <input type="date" id="tglJurnalGuru" name="tgl" class="form-control" required>
                     </div>
                     <div class="mb-3">
                         <label class="form-label">Guru <span class="text-danger">*</span></label>
-                        <select name="guru_id" class="form-select" required>
+                        <select id="guruIdJurnalGuru" name="guru_id" class="form-select" required>
                             <option value="">-- Pilih Guru --</option>
                             <?php foreach ($guruOptions as $guru): ?>
                                 <option value="<?= $guru['id_guru']; ?>"><?= htmlspecialchars($guru['nama_guru']); ?></option>
@@ -189,7 +190,7 @@ $currentPage = isset($_GET['page']) ? (int)$_GET['page'] : 1;
                     </div>
                     <div class="mb-3">
                         <label class="form-label">Kelas <span class="text-danger">*</span></label>
-                        <select name="kelas_id" class="form-select" required>
+                        <select id="kelasIdJurnalGuru" name="kelas_id" class="form-select" required>
                             <option value="">-- Pilih Kelas --</option>
                             <?php foreach ($kelasOptions as $kelas): ?>
                                 <option value="<?= $kelas['id_kelas']; ?>"><?= htmlspecialchars($kelas['nama_kelas']); ?></option>
@@ -198,7 +199,7 @@ $currentPage = isset($_GET['page']) ? (int)$_GET['page'] : 1;
                     </div>
                     <div class="mb-3">
                         <label class="form-label">Keterangan <span class="text-danger">*</span></label>
-                        <textarea name="keterangan" class="form-control" rows="5" placeholder="Masukkan catatan kegiatan/pembelajaran..." required></textarea>
+                        <textarea id="keteranganJurnalGuru" name="keterangan" class="form-control" rows="5" placeholder="Masukkan catatan kegiatan/pembelajaran..." required></textarea>
                     </div>
                 </div>
                 <div class="modal-footer">
@@ -209,5 +210,39 @@ $currentPage = isset($_GET['page']) ? (int)$_GET['page'] : 1;
         </div>
     </div>
 </div>
+
+<script>
+function resetJurnalGuruForm() {
+    document.getElementById('formJurnalGuru').reset();
+    document.getElementById('modalJurnalGuruTitle').textContent = 'Tambah Jurnal Guru';
+    document.getElementById('formJurnalGuru').action = 'proses/tbh_jurnal_guru.php';
+    document.getElementById('jurnalGuruId').value = '';
+}
+
+function editJurnalGuru(id) {
+    // Reset form
+    document.getElementById('formJurnalGuru').reset();
+    document.getElementById('modalJurnalGuruTitle').textContent = 'Edit Jurnal Guru';
+    document.getElementById('formJurnalGuru').action = 'proses/edit_jurnal_guru.php';
+    document.getElementById('jurnalGuruId').value = id;
+    
+    // Fetch data
+    fetch('proses/get_jurnal_guru.php?id=' + id)
+        .then(response => response.json())
+        .then(data => {
+            console.log('Jurnal guru data:', data);
+            
+            // Set form values
+            document.getElementById('tglJurnalGuru').value = data.tgl;
+            document.getElementById('guruIdJurnalGuru').value = data.guru_id;
+            document.getElementById('kelasIdJurnalGuru').value = data.kelas_id;
+            document.getElementById('keteranganJurnalGuru').value = data.keterangan;
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('Gagal memuat data jurnal');
+        });
+}
+</script>
 
 <?php include 'includes/footer.php'; ?>

@@ -1,7 +1,6 @@
 <?php
 include '../config.php';
-$data = query("SELECT * FROM kelas JOIN jurusan ON kelas.jurusan_id = jurusan.id_jurusan ");
-
+$jurusan = query("SELECT * FROM jurusan");
 if (isset($_POST['submit'])) {
     if (tbh_kelas($_POST) > 0) {
         echo "
@@ -37,15 +36,15 @@ if (isset($_POST['submit'])) {
                     <div class="form-group col-md-6">
                         <label class="form-label" for="nama">Tingkat</label>
                         <select name="kelas" class="form-select" id="kelas">
-                            <?php foreach($data as $row) : ?>
-                                <option value="<?= $row['id_kelas'] ?>"><?= $row['nama_kelas'] ?></option>
-                            <?php endforeach; ?>
+                            <option value="X">X</option>
+                            <option value="XI">XI</option>
+                            <option value="XII">XII</option>
                         </select>
                     </div>
                     <div class="form-group col-md-6">
                         <label class="form-label">Jurusan</label>
                         <select name="jurusan" class="form-select" id="jurusan">
-                            <?php foreach ($data as $row) : ?>
+                            <?php foreach ($jurusan as $row) : ?>
                                 <option value="<?= $row['id_jurusan'] ?>"><?= $row['nama_jurusan'] ?></option>
                             <?php endforeach; ?>
                         </select>

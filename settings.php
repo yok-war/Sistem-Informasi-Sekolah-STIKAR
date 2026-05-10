@@ -20,6 +20,16 @@ if (isset($_POST['update_settings'])) {
 
 <?php include 'includes/header.php'; ?>
 
+<script>
+  try {
+    const theme = '<?= $settings['theme'] === 'dark' ? 'dark' : 'light' ?>';
+    localStorage.setItem('theme', theme);
+    document.body.classList.toggle('dark-mode', theme === 'dark');
+  } catch (e) {
+    // ignore storage errors
+  }
+</script>
+
 <div class="content container mt-4">
     <div class="card shadow-sm">
         <div class="card-header">

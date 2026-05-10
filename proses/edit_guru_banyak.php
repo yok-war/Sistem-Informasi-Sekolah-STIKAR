@@ -143,7 +143,7 @@ if (isset($_POST['submit_bulk'])) {
                     <table class="table table-bordered table-sm table-hover">
                         <thead class="table-light">
                             <tr>
-                                <th>NIP</th>
+                                <!-- <th>NIP</th> -->
                                 <th>Nama</th>
                                 <th>TTL</th>
                                 <th>Alamat</th>
@@ -154,9 +154,9 @@ if (isset($_POST['submit_bulk'])) {
                         <tbody>
                             <?php foreach ($guru as $row) : ?>
                                 <tr>
-                                    <td>
+                                    <!-- <td>
                                         <input type="text" name="guru_data[<?= $row['id_guru'] ?>][nip]" class="form-control form-control-sm" value="<?= $row['nip_guru'] ?>">
-                                    </td>
+                                    </td> -->
                                     <td>
                                         <input type="text" name="guru_data[<?= $row['id_guru'] ?>][nama]" class="form-control form-control-sm" value="<?= $row['nama_guru'] ?>">
                                     </td>

@@ -1,8 +1,8 @@
 <?php
 include '../config.php';
 $id = $_GET['id'];
-$siswa = query("SELECT * FROM siswa JOIN kelas ON siswa.kelas_id = kelas.id_kelas WHERE id_siswa = $id");
-$kelas = query("SELECT * FROM kelas");
+$siswa = query("SELECT * FROM siswa JOIN kelas ON siswa.kelas_id = kelas.id_kelas JOIN jurusan ON kelas.jurusan_id = jurusan.id_jurusan WHERE id_siswa = $id");
+$kelas = query("SELECT * FROM kelas JOIN jurusan ON kelas.jurusan_id = jurusan.id_jurusan ORDER BY jurusan.nama_jurusan ASC, kelas.nama_kelas ASC");
 if (isset($_POST['submit'])) {
     if (edit_siswa($_POST) > 0) {
         echo "
@@ -72,9 +72,11 @@ if (isset($_POST['submit'])) {
                         <div class="form-group col-md-6">
                             <label class="form-label">Kelas</label>
                             <select name="kelas" id="kelas" class="form-select">
-                                <option value="<?= $row['id_kelas'] ?>"><?= $row['nama_kelas'] ?></option>
+                                <option value="<?= $row['id_kelas'] ?>" class="bg-success text-white"><?= $row['nama_kelas'] ?> - <?= $row['nama_jurusan'] ?></option>
                                 <?php foreach ($kelas as $kls) : ?>
-                                    <option value="<?= $kls['id_kelas'] ?>"><?= $kls['nama_kelas'] ?></option>
+                                    <option value="<?= $kls['id_kelas'] ?>">
+                                        <?= $kls['nama_kelas'] ?> - <?= $kls['nama_jurusan'] ?>
+                                    </option>
                                 <?php endforeach; ?>
                             </select>
                         </div>

@@ -6,7 +6,7 @@
         const donutCanvas = document.getElementById('donutChart');
 
         const rawJurusan = (window.dashboardChartData && window.dashboardChartData.jurusan) || [];
-        const rawTahunan = (window.dashboardChartData && window.dashboardChartData.siswaPerTahun) || {}
+        const rawAttendance = (window.dashboardChartData && window.dashboardChartData.siswaPerTahun) || {};
 
         let barLabels = [];
         let barValues = [];
@@ -34,10 +34,42 @@
           });
         }
 
-        const yearLabels = Object.keys(rawTahunan);
-        const yearValues = Object.values(rawTahunan).map(function(val) {
-          return Number(val) || 0;
-        });
+        let attendanceLabels = [];
+        let attendanceDatasets = [];
+
+        if (rawAttendance && typeof rawAttendance === 'object') {
+          if (Array.isArray(rawAttendance.labels) && Array.isArray(rawAttendance.datasets)) {
+            attendanceLabels = rawAttendance.labels;
+            attendanceDatasets = rawAttendance.datasets.map(function(dataset, index) {
+              return {
+                label: dataset.label || 'Data ' + (index + 1),
+                data: Array.isArray(dataset.data) ? dataset.data.map(function(val) {
+                  return Number(val) || 0;
+                }) : [],
+                borderColor: dataset.borderColor || '#10b981',
+                backgroundColor: dataset.backgroundColor || 'rgba(16, 185, 129, 0.2)',
+                fill: true,
+                tension: 0.3,
+                pointRadius: 4,
+                pointHoverRadius: 6
+              };
+            });
+          } else {
+            attendanceLabels = Object.keys(rawAttendance);
+            attendanceDatasets = [{
+              label: 'Jumlah Siswa',
+              data: Object.values(rawAttendance).map(function(val) {
+                return Number(val) || 0;
+              }),
+              borderColor: '#10b981',
+              backgroundColor: 'rgba(16, 185, 129, 0.2)',
+              fill: true,
+              tension: 0.3,
+              pointRadius: 4,
+              pointHoverRadius: 6
+            }];
+          }
+        }
 
         if (barCanvas) {
           window.barChart = new Chart(barCanvas, {
@@ -75,17 +107,8 @@
           window.donutChart = new Chart(donutCanvas, {
             type: 'line',
             data: {
-              labels: yearLabels,
-              datasets: [{
-                label: 'Jumlah Siswa',
-                data: yearValues,
-                borderColor: '#10b981',
-                backgroundColor: 'rgba(16, 185, 129, 0.2)',
-                fill: true,
-                tension: 0.3,
-                pointRadius: 4,
-                pointHoverRadius: 6
-              }]
+              labels: attendanceLabels,
+              datasets: attendanceDatasets
             },
             options: {
               plugins: {

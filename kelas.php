@@ -1,4 +1,4 @@
-<?php
+    <?php
     include 'config.php';
     if (!isset($_SESSION['login'])) {
         header("Location: login.php");
@@ -6,7 +6,7 @@
     }
     $title = "Data Kelas";
     $tblName = "dataKelas";
-    $data_kelas = query("SELECT * FROM kelas JOIN jurusan ON kelas.jurusan_id = jurusan.id_jurusan ");
+    $data_kelas = query("SELECT * FROM kelas JOIN jurusan ON kelas.jurusan_id = jurusan.id_jurusan ORDER BY kelas.nama_kelas ASC");
 ?>
 <!-- HEADER -->
 <?php include 'includes/header.php'; ?>

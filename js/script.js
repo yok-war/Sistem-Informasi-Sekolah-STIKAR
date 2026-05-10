@@ -59,12 +59,12 @@
     }
 
     function updateIcons(isDark) {
-      const icons = document.querySelectorAll("#darkIcon, #darkIconDesktop");
+      const icons = document.querySelectorAll("#darkIconDesktop, #darkIconMobile");
 
       icons.forEach(icon => {
         if (!icon) return;
 
-        icon.classList.remove("bi-moon-stars", "bi-sun");
+        icon.classList.remove("bi-moon-stars", "bi-moon", "bi-sun");
         icon.classList.add(isDark ? "bi-sun" : "bi-moon-stars");
       });
     }
@@ -148,8 +148,66 @@
 
     // Chart
 
-    // siswa
+    // search
     const searchInput = document.getElementById("searchInput");
+
+    function performGlobalSearch(query) {
+      const value = query.trim().toLowerCase();
+      if (!value) return;
+
+      const pathSegments = window.location.pathname.split('/');
+      const basePath = pathSegments.length > 1 ? '/' + pathSegments[1] : '';
+
+      if (value.includes('profile') || value.includes('profil') || value.includes('akun')) {
+        window.location.href = basePath + '/profile.php';
+        return;
+      }
+      if (value.includes('absensi kelas')) {
+        window.location.href = basePath + '/absensi_kelas.php';
+        return;
+      }
+      if (value.includes('absensi guru')) {
+        window.location.href = basePath + '/absensi_guru.php';
+        return;
+      }
+      if (value.includes('absensi')) {
+        window.location.href = basePath + '/absensi_kelas.php';
+        return;
+      }
+      if (value.includes('jurnal kelas')) {
+        window.location.href = basePath + '/jurnal_kelas.php';
+        return;
+      }
+      if (value.includes('jurnal guru')) {
+        window.location.href = basePath + '/jurnal_guru.php';
+        return;
+      }
+      if (value.includes('jurnal')) {
+        window.location.href = basePath + '/jurnal_kelas.php';
+        return;
+      }
+      if (value.includes('siswa')) {
+        window.location.href = basePath + '/siswa.php';
+        return;
+      }
+      if (value.includes('kelas')) {
+        window.location.href = basePath + '/kelas.php';
+        return;
+      }
+      if (value.includes('jurusan')) {
+        window.location.href = basePath + '/jurusan.php';
+        return;
+      }
+      if (value.includes('guru')) {
+        window.location.href = basePath + '/guru.php';
+        return;
+      }
+      if (value.includes('dashboard')) {
+        window.location.href = basePath + '/dashboard.php';
+        return;
+      }
+      window.location.href = basePath + '/siswa.php';
+    }
 
     if (searchInput) {
       searchInput.addEventListener("keyup", function() {
@@ -160,10 +218,54 @@
           row.style.display = row.innerText.toLowerCase().includes(value) ? "" : "none";
         });
       });
+
+      searchInput.addEventListener('keydown', function(event) {
+        if (event.key === 'Enter') {
+          event.preventDefault();
+          performGlobalSearch(this.value);
+        }
+      });
     }
+
+    function showPageLoader() {
+      const loader = document.getElementById('pageLoader');
+      if (loader) {
+        loader.classList.add('visible');
+      }
+    }
+
+    function hidePageLoader() {
+      const loader = document.getElementById('pageLoader');
+      if (loader) {
+        loader.classList.remove('visible');
+      }
+    }
+
+    document.addEventListener('click', function(event) {
+      const anchor = event.target.closest('a');
+      if (!anchor) return;
+      const href = anchor.getAttribute('href');
+      if (!href || href.startsWith('#') || href.startsWith('mailto:') || href.startsWith('tel:') || anchor.target === '_blank') return;
+      if (href.startsWith('http') && !href.includes(window.location.host)) return;
+      if (href.startsWith('javascript:')) return;
+
+      event.preventDefault();
+      showPageLoader();
+
+      setTimeout(function() {
+        window.location.href = href;
+      }, 300);
+    });
+
+    document.addEventListener('submit', function(event) {
+      if (event.target.closest('form')) {
+        showPageLoader();
+      }
+    });
 
     window.addEventListener("DOMContentLoaded", function () {
       setupBulkActions();
+      hidePageLoader();
     });
 
     
